@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'var(--font-inter)', system-ui, -apple-system, sans-serif;
+  --animate-shimmer: shimmer 2s infinite linear;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-fadeIn: fadeIn 0.3s ease-out both;
+}
+
+/* ============================================
+   DARK MODE (default)
+   ============================================ */
+:root {
+  --bg: #07070e;
+  --bg-sidebar: #0a0a12;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-input: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --text: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+}
+
+/* ============================================
+   LIGHT MODE
+   ============================================ */
+html.light {
+  --bg: #f8f9fc;
+  --bg-sidebar: #ffffff;
+  --bg-card: rgba(0, 0, 0, 0.02);
+  --bg-input: rgba(0, 0, 0, 0.03);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.15);
+  --text: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+}
+
+html.light body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Light mode overrides for specific tailwind colors */
+html.light .bg-\[\#07070e\],
+html.light .bg-\[\#0a0a12\] {
+  background-color: var(--bg) !important;
+}
+
+html.light .bg-\[\#0a0a14\]\/50 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.light .bg-white\/\[0\.03\],
+html.light .bg-white\/\[0\.02\],
+html.light .bg-white\/\[0\.04\],
+html.light .bg-white\/\[0\.05\],
+html.light .bg-white\/\[0\.06\],
+html.light .bg-white\/\[0\.08\] {
+  background-color: var(--bg-card) !important;
+}
+
+html.light .border-white\/\[0\.06\],
+html.light .border-white\/\[0\.08\],
+html.light .border-white\/\[0\.04\] {
+  border-color: var(--border) !important;
+}
+
+html.light .text-white {
+  color: var(--text) !important;
+}
+
+html.light .text-gray-200,
+html.light .text-gray-300 {
+  color: #374151 !important;
+}
+
+html.light .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+html.light .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+html.light .text-gray-600 {
+  color: #6b7280 !important;
+}
+
+html.light .placeholder-gray-500::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Light mode sidebar */
+html.light aside {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light .nav-item:hover,
+html.light .hover\:bg-white\/\[0\.04\]:hover,
+html.light .hover\:bg-white\/\[0\.06\]:hover {
+  background-color: rgba(99, 102, 241, 0.05) !important;
+}
+
+/* Light mode topbar */
+html.light header {
+  background-color: rgba(248, 249, 252, 0.9) !important;
+  backdrop-filter: blur(20px);
+  border-color: #e5e7eb !important;
+}
+
+/* Light mode cards */
+html.light .rounded-2xl {
+  border-color: #e5e7eb !important;
+}
+
+/* Light mode inputs */
+html.light input,
+html.light textarea,
+html.light select {
+  background-color: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+html.light input:focus,
+html.light textarea:focus {
+  border-color: rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Light mode gradient backgrounds (ambient) */
+html.light .bg-indigo-600\/\[0\.03\],
+html.light .bg-purple-600\/\[0\.03\],
+html.light .bg-indigo-600\/\[0\.04\] {
+  background-color: transparent !important;
+}
+
+/* Light mode chat bubbles */
+html.light .bg-white\/\[0\.06\] {
+  background-color: #f3f4f6 !important;
+}
+
+html.light .bg-gradient-to-br.from-indigo-600.to-indigo-700 {
+  color: #ffffff !important;
+}
+
+/* Light mode scrollbar */
+html.light *::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+html.light *::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+html.light ::selection {
+  background: rgba(99, 102, 241, 0.2);
+  color: #111827;
+}
+
+/* ============================================
+   Shared Styles
+   ============================================ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.06) transparent;
+}
+
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 3px; }
+
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+body { background: var(--bg); color: var(--text); }
+select option { background-color: #0f0f1a; color: white; }
+html.light select option { background-color: #ffffff; color: #111827; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+
+.animate-fadeIn { animation: fadeIn 0.3s ease-out both; }
+*:focus-visible { outline: 2px solid rgba(99, 102, 241, 0.5); outline-offset: 2px; border-radius: 8px; }
+::selection { background: rgba(99, 102, 241, 0.3); color: white; }

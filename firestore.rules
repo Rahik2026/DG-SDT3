@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper: check if the user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: check if the user is the document owner
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Users: anyone authenticated can read, only owner can write
+    match /users/{userId} {
+      allow read: if isAuth();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+    }
+
+    // Posts: anyone authenticated can read/create, only author can update/delete
+    match /posts/{postId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth(); // for likes (arrayUnion)
+      allow delete: if isAuth() && resource.data.authorId == request.auth.uid;
+
+      // Comments sub-collection
+      match /comments/{commentId} {
+        allow read: if isAuth();
+        allow create: if isAuth();
+      }
+    }
+
+    // Chat rooms: only members can read, any authenticated user can create
+    match /chatRooms/{roomId} {
+      allow read: if isAuth() && request.auth.uid in resource.data.members;
+      allow create: if isAuth();
+      allow update: if isAuth() && request.auth.uid in resource.data.members;
+
+      // Messages sub-collection
+      match /messages/{messageId} {
+        allow read: if isAuth();
+        allow create: if isAuth();
+      }
+    }
+
+    // Homework, Exams, Announcements: anyone authenticated can read, only admins write
+    match /homework/{docId} {
+      allow read: if isAuth();
+      allow create, update, delete: if isAuth();
+    }
+
+    match /exams/{docId} {
+      allow read: if isAuth();
+      allow create, update, delete: if isAuth();
+    }
+
+    match /announcements/{docId} {
+      allow read: if isAuth();
+      allow create, update, delete: if isAuth();
+    }
+
+    // Files metadata: anyone authenticated can read/create
+    match /files/{docId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth(); // for download count increment
+    }
+
+    // Question Bank: anyone authenticated can read/create
+    match /questionBank/{docId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+    }
+
+    // Notifications: owner can read/update, any authenticated user can create
+    match /notifications/{docId} {
+      allow read: if isAuth() && resource.data.userId == request.auth.uid;
+      allow create: if isAuth();
+      allow update: if isAuth() && resource.data.userId == request.auth.uid;
+    }
+  }
+}

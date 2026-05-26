@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CampusHub — Preview</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07070e;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.08);--text:#fff;--text2:#9ca3af;--text3:#6b7280;--indigo:#6366f1;--purple:#a855f7;--emerald:#10b981;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;--cyan:#06b6d4}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden}
+::selection{background:rgba(99,102,241,0.3)}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+
+/* Navigation Tabs */
+.tabs{position:sticky;top:0;z-index:100;background:rgba(7,7,14,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:12px 16px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--indigo);border-bottom-color:var(--indigo)}
+.tab svg{width:14px;height:14px}
+
+/* Screens */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ====== LOGIN SCREEN ====== */
+.login-screen{display:none;min-height:100vh}
+.login-screen.active{display:flex}
+.login-left{flex:1;position:relative;overflow:hidden;display:none;flex-direction:column;justify-content:center;padding:48px 64px}
+@media(min-width:900px){.login-left{display:flex}}
+.login-left::before{content:'';position:absolute;top:20%;left:20%;width:400px;height:400px;background:rgba(99,102,241,0.15);border-radius:50%;filter:blur(100px)}
+.login-left::after{content:'';position:absolute;bottom:20%;right:20%;width:350px;height:350px;background:rgba(168,85,247,0.12);border-radius:50%;filter:blur(100px)}
+.login-right{flex:1;max-width:520px;display:flex;flex-direction:column;justify-content:center;padding:32px 48px;position:relative}
+@media(max-width:899px){.login-right{max-width:100%;padding:24px 20px}}
+
+.logo-row{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.logo-icon{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--indigo),#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(99,102,241,0.3)}
+.logo-icon svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2}
+.logo-text h1{font-size:18px;font-weight:700;letter-spacing:-0.02em}
+.logo-text p{font-size:10px;color:var(--text3)}
+.login-hero h2{font-size:40px;font-weight:700;line-height:1.15;margin-bottom:12px;letter-spacing:-0.03em}
+.login-hero h2 span{background:linear-gradient(135deg,#818cf8,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-hero p{color:var(--text3);font-size:16px;max-width:380px;margin-bottom:40px}
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:2}
+.feature-card{padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(10px);transition:background 0.2s}
+.feature-card:hover{background:rgba(255,255,255,0.05)}
+.feature-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15));display:flex;align-items:center;justify-content:center;margin-bottom:10px;transition:transform 0.2s}
+.feature-card:hover .feature-icon{transform:scale(1.1)}
+.feature-icon svg{width:18px;height:18px;stroke:var(--indigo);fill:none;stroke-width:2}
+.feature-card h4{font-size:13px;font-weight:600;margin-bottom:2px}
+.feature-card p{font-size:11px;color:var(--text3)}
+
+.form-title{font-size:26px;font-weight:700;margin-bottom:4px}
+.form-subtitle{color:var(--text3);font-size:14px;margin-bottom:28px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:500;color:#d1d5db;margin-bottom:6px}
+.form-input-wrap{position:relative}
+.form-input-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text3);fill:none;stroke:currentColor;stroke-width:2}
+.form-input{width:100%;padding:10px 14px 10px 40px;border-radius:12px;border:1px solid var(--border2);background:rgba(255,255,255,0.04);color:#fff;font-size:14px;outline:none;transition:all 0.2s}
+.form-input:focus{border-color:rgba(99,102,241,0.4);box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+.form-input::placeholder{color:var(--text3)}
+.btn-primary{width:100%;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--indigo),#7c3aed);color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 24px rgba(99,102,241,0.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(99,102,241,0.35)}
+.btn-primary:active{transform:scale(0.98)}
+.btn-primary svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+.social-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.btn-social{padding:10px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.06);color:#fff;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
+.btn-social:hover{background:rgba(255,255,255,0.1)}
+.btn-social svg{width:16px;height:16px}
+.divider{display:flex;align-items:center;margin:24px 0;gap:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.divider span{font-size:11px;color:var(--text3)}
+.demo-hint{margin-top:20px;padding:12px;border-radius:12px;background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.1);text-align:center;font-size:11px;color:rgba(129,140,248,0.8)}
+.form-footer{text-align:center;margin-top:24px;font-size:13px;color:var(--text3)}
+.form-footer a{color:var(--indigo);font-weight:500;text-decoration:none}
+.form-remember{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.form-remember label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);cursor:pointer}
+.form-remember input{width:16px;height:16px;accent-color:var(--indigo)}
+.form-remember a{font-size:13px;color:var(--indigo);font-weight:500;text-decoration:none}
+
+/* ====== APP LAYOUT ====== */
+.app-layout{display:flex;min-height:100vh}
+.sidebar{width:260px;border-right:1px solid var(--border);background:rgba(10,10,18,0.95);backdrop-filter:blur(20px);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50}
+@media(max-width:899px){.sidebar{display:none}}
+.sidebar-logo{display:flex;align-items:center;gap:12px;height:56px;padding:0 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo .logo-icon{width:34px;height:34px;border-radius:10px}
+.sidebar-logo .logo-icon svg{width:18px;height:18px}
+.sidebar-logo span{font-size:14px;font-weight:700;letter-spacing:-0.01em}
+.sidebar-logo small{display:block;font-size:9px;color:var(--text3);font-weight:400}
+
+.sidebar-nav{flex:1;padding:16px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;position:relative;text-decoration:none}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.04)}
+.nav-item.active{color:#fff;background:rgba(255,255,255,0.06)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;border-radius:0 4px 4px 0;background:linear-gradient(180deg,#818cf8,var(--purple))}
+.nav-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.nav-item.active .nav-icon{background:linear-gradient(135deg,var(--indigo),#4f46e5);color:#fff;box-shadow:0 4px 12px rgba(99,102,241,0.3)}
+.nav-item:not(.active) .nav-icon{background:rgba(255,255,255,0.04)}
+.nav-badge{margin-left:auto;padding:1px 7px;border-radius:99px;background:rgba(99,102,241,0.15);color:var(--indigo);font-size:10px;font-weight:600}
+
+.sidebar-user{padding:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff;flex-shrink:0;position:relative}
+.avatar.sm{width:32px;height:32px;font-size:11px}
+.avatar.md{width:38px;height:38px;font-size:13px}
+.avatar.lg{width:44px;height:44px;font-size:15px}
+.avatar.xl{width:56px;height:56px;font-size:18px}
+.av-indigo{background:linear-gradient(135deg,var(--indigo),#7c3aed)}
+.av-emerald{background:linear-gradient(135deg,var(--emerald),#14b8a6)}
+.av-orange{background:linear-gradient(135deg,#f97316,#ef4444)}
+.av-pink{background:linear-gradient(135deg,var(--pink),#e11d48)}
+.av-cyan{background:linear-gradient(135deg,var(--cyan),#3b82f6)}
+.av-amber{background:linear-gradient(135deg,var(--amber),#f97316)}
+.online-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:var(--emerald);border:2px solid #0a0a12}
+.offline-dot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:var(--text3);border:2px solid #0a0a12}
+
+.main-area{flex:1;margin-left:260px;display:flex;flex-direction:column}
+@media(max-width:899px){.main-area{margin-left:0}}
+
+/* Top Bar */
+.topbar{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:rgba(10,10,18,0.8);backdrop-filter:blur(20px);position:sticky;top:38px;z-index:40}
+.search-box{position:relative;width:300px}
+.search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text3);stroke:currentColor;fill:none;stroke-width:2}
+.search-box input{width:100%;padding:8px 40px 8px 36px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:#fff;font-size:13px;outline:none;transition:all 0.2s}
+.search-box input:focus{border-color:rgba(99,102,241,0.3);box-shadow:0 0 0 3px rgba(99,102,241,0.08)}
+.search-box input::placeholder{color:var(--text3)}
+.search-box kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.05);font-size:10px;color:var(--text3);border:1px solid var(--border2)}
+.topbar-right{display:flex;align-items:center;gap:4px}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:none;background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;position:relative}
+.icon-btn:hover{background:rgba(255,255,255,0.06);color:#fff}
+.icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.notif-badge{position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:var(--red);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#fff}
+
+.content{padding:20px 24px;flex:1;position:relative}
+@media(max-width:600px){.content{padding:16px}}
+.content::before{content:'';position:fixed;top:0;left:25%;width:500px;height:500px;background:rgba(99,102,241,0.025);border-radius:50%;filter:blur(120px);pointer-events:none}
+
+/* ====== DASHBOARD ====== */
+.greeting h2{font-size:24px;font-weight:700;display:flex;align-items:center;gap:8px}
+.greeting p{font-size:13px;color:var(--text3);margin-top:4px}
+.greeting-badges{display:flex;gap:8px;margin-top:4px}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:600;border:1px solid}
+.badge-purple{background:rgba(168,85,247,0.08);color:var(--purple);border-color:rgba(168,85,247,0.2)}
+.badge-emerald{background:rgba(16,185,129,0.08);color:var(--emerald);border-color:rgba(16,185,129,0.2)}
+.badge-amber{background:rgba(245,158,11,0.08);color:var(--amber);border-color:rgba(245,158,11,0.2)}
+.badge-red{background:rgba(239,68,68,0.08);color:var(--red);border-color:rgba(239,68,68,0.2)}
+.badge-blue{background:rgba(59,130,246,0.08);color:#60a5fa;border-color:rgba(59,130,246,0.2)}
+.badge-default{background:rgba(255,255,255,0.06);color:var(--text2);border-color:rgba(255,255,255,0.1)}
+.badge-dot::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.stats-grid{grid-template-columns:1fr}}
+.stat-card{padding:18px;border-radius:16px;border:1px solid var(--border);background:var(--surface);position:relative;overflow:hidden;transition:all 0.2s}
+.stat-card:hover{border-color:rgba(255,255,255,0.1);transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(99,102,241,0.03),transparent,rgba(168,85,247,0.03));pointer-events:none}
+.stat-header{display:flex;align-items:start;justify-content:space-between}
+.stat-label{font-size:11px;color:var(--text3);font-weight:500}
+.stat-value{font-size:28px;font-weight:700;margin-top:2px}
+.stat-change{font-size:11px;margin-top:4px}
+.stat-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.stat-icon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
+
+/* Card */
+.card{border-radius:16px;border:1px solid var(--border);background:var(--surface);padding:18px;position:relative;overflow:hidden}
+.card-glow::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(99,102,241,0.04),transparent,rgba(168,85,247,0.04));pointer-events:none}
+.card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.card-title svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-top:20px}
+@media(max-width:1100px){.dash-grid{grid-template-columns:1fr}}
+
+/* Countdown */
+.countdown-card{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.countdown-left{display:flex;align-items:center;gap:14px}
+.countdown-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--red),#f97316);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(239,68,68,0.2)}
+.countdown-icon svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2}
+.countdown-info small{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.countdown-info h4{font-size:16px;font-weight:700;margin:2px 0}
+.countdown-timer{display:flex;gap:10px}
+.countdown-unit{text-align:center}
+.countdown-unit span{display:block;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.countdown-unit small{font-size:9px;color:var(--text3);text-transform:uppercase}
+
+/* Chart placeholder */
+.chart-area{height:200px;border-radius:12px;background:linear-gradient(180deg,rgba(99,102,241,0.06) 0%,transparent 100%);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:0 8px 8px}
+.chart-bar{flex:1;margin:0 3px;border-radius:6px 6px 0 0;transition:height 0.5s ease;min-width:8px}
+
+/* Homework list */
+.hw-item{padding:14px;border-radius:12px;border:1px solid var(--border);margin-bottom:8px;display:flex;align-items:start;justify-content:space-between;transition:all 0.15s;cursor:pointer}
+.hw-item:hover{background:rgba(255,255,255,0.02);transform:translateX(3px)}
+.hw-item.urgent{border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.02)}
+.hw-item.overdue{border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.02)}
+.hw-title{font-size:13px;font-weight:600}
+.hw-desc{font-size:11px;color:var(--text3);margin:3px 0 6px}
+.hw-meta{display:flex;gap:12px;font-size:11px;color:var(--text3)}
+.hw-meta svg{width:12px;height:12px;vertical-align:-1px;margin-right:3px;stroke:currentColor;fill:none;stroke-width:2}
+.hw-status{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hw-status svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* Quick actions */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.015);cursor:pointer;transition:all 0.15s;text-decoration:none}
+.quick-btn:hover{background:rgba(255,255,255,0.04);transform:scale(1.02)}
+.quick-btn:active{transform:scale(0.98)}
+.quick-icon{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.quick-icon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
+.quick-btn span{font-size:11px;font-weight:500;color:var(--text2)}
+
+/* Announcement items */
+.ann-item{padding:10px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.015);margin-bottom:8px;cursor:pointer;transition:all 0.15s}
+.ann-item:hover{background:rgba(255,255,255,0.03);transform:translateX(2px)}
+.ann-inner{display:flex;gap:10px;align-items:start}
+.ann-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.ann-title{font-size:13px;font-weight:500}
+.ann-text{font-size:11px;color:var(--text3);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ann-footer{font-size:10px;color:var(--text3);margin-top:6px}
+
+/* ====== FEED ====== */
+.post-card{padding:18px;border-radius:16px;border:1px solid var(--border);background:var(--surface);margin-bottom:14px;transition:all 0.2s}
+.post-card:hover{border-color:rgba(255,255,255,0.1)}
+.post-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.post-author{display:flex;align-items:center;gap:10px}
+.post-author-name{font-size:13px;font-weight:600}
+.post-author-time{font-size:11px;color:var(--text3)}
+.post-content{font-size:13px;color:#e5e7eb;line-height:1.65;white-space:pre-wrap;margin-bottom:10px}
+.post-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.post-tag{padding:2px 8px;border-radius:6px;background:rgba(99,102,241,0.08);color:var(--indigo);font-size:10px;font-weight:500;cursor:pointer;transition:background 0.15s}
+.post-tag:hover{background:rgba(99,102,241,0.15)}
+.post-stats{display:flex;gap:14px;padding:8px 0;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
+.post-actions{display:flex;gap:4px;padding-top:4px;border-top:1px solid var(--border)}
+.post-action{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:10px;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;transition:all 0.15s;border:none;background:transparent}
+.post-action:hover{background:rgba(255,255,255,0.04);color:#fff}
+.post-action.liked{color:var(--pink);background:rgba(236,72,153,0.05)}
+.post-action.liked svg{fill:var(--pink)}
+.post-action svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* ====== CHAT ====== */
+.chat-layout{display:flex;height:calc(100vh - 94px);border-radius:16px;border:1px solid var(--border);overflow:hidden;background:rgba(255,255,255,0.008)}
+.chat-sidebar{width:340px;border-right:1px solid var(--border);display:flex;flex-direction:column;background:rgba(10,10,20,0.4)}
+@media(max-width:800px){.chat-sidebar{width:100%}}
+.chat-sidebar-header{padding:16px;border-bottom:1px solid var(--border)}
+.chat-sidebar-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.chat-sidebar-title svg{width:18px;height:18px;stroke:var(--indigo);fill:none;stroke-width:2}
+.chat-search{width:100%;padding:8px 12px 8px 36px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:#fff;font-size:13px;outline:none}
+.chat-search::placeholder{color:var(--text3)}
+.chat-list{flex:1;overflow-y:auto}
+.chat-item{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;transition:all 0.1s;border-left:2px solid transparent}
+.chat-item:hover{background:rgba(255,255,255,0.02)}
+.chat-item.active{background:rgba(99,102,241,0.04);border-left-color:var(--indigo)}
+.chat-name{font-size:13px;font-weight:600}
+.chat-preview{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.chat-preview svg{width:13px;height:13px;stroke:var(--indigo);fill:none;stroke-width:2}
+.chat-time{font-size:10px;color:var(--text3);margin-left:auto}
+.group-badge{position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:rgba(99,102,241,0.2);border:2px solid #0a0a12;display:flex;align-items:center;justify-content:center}
+.group-badge svg{width:9px;height:9px;stroke:var(--indigo);fill:none;stroke-width:2}
+
+.chat-main{flex:1;display:flex;flex-direction:column}
+@media(max-width:800px){.chat-main{display:none}}
+.chat-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(10,10,20,0.4)}
+.chat-topbar-info{display:flex;align-items:center;gap:10px}
+.chat-topbar-name{font-size:14px;font-weight:600}
+.chat-topbar-status{font-size:11px;color:var(--text3)}
+.chat-topbar-actions{display:flex;gap:2px}
+
+.messages-area{flex:1;overflow-y:auto;padding:16px}
+.msg-date{text-align:center;padding:12px 0}
+.msg-date span{padding:4px 12px;border-radius:99px;background:rgba(255,255,255,0.03);font-size:11px;color:var(--text3);font-weight:500}
+.msg-row{display:flex;align-items:flex-end;gap:6px;margin-bottom:3px}
+.msg-row.mine{justify-content:flex-end}
+.msg-row.last{margin-bottom:12px}
+.msg-avatar{width:24px;flex-shrink:0}
+.msg-bubble{max-width:65%;padding:8px 14px;font-size:13px;line-height:1.5;border-radius:16px}
+.msg-bubble.sent{background:linear-gradient(135deg,var(--indigo),#4f46e5);color:#fff;border-bottom-right-radius:4px}
+.msg-bubble.received{background:rgba(255,255,255,0.06);color:#e5e7eb;border-bottom-left-radius:4px}
+.msg-time{font-size:9px;opacity:0.5;margin-top:3px;display:flex;align-items:center;gap:4px;justify-content:flex-end}
+.msg-time svg{width:11px;height:11px;stroke:rgba(129,140,248,0.6);fill:none;stroke-width:2}
+
+.typing-indicator{padding:0 16px 6px;display:flex;align-items:center;gap:6px}
+.typing-dots{display:flex;gap:3px}
+.typing-dot{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:typing 1.5s infinite}
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes typing{0%,100%{opacity:0.3}50%{opacity:1}}
+.typing-text{font-size:11px;color:var(--text3)}
+
+.chat-input-area{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;background:rgba(10,10,20,0.4)}
+.chat-input{flex:1;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:#fff;font-size:13px;outline:none}
+.chat-input::placeholder{color:var(--text3)}
+.send-btn{width:40px;height:40px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--indigo),#7c3aed);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(99,102,241,0.3);transition:all 0.15s}
+.send-btn:hover{transform:scale(1.05)}
+.send-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
+
+/* ====== FILES ====== */
+.files-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.drive-badge{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);font-size:11px;color:var(--emerald);font-weight:500}
+.drive-badge svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.cat-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tab{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
+.cat-tab:hover{background:rgba(255,255,255,0.05)}
+.cat-tab.active{background:rgba(99,102,241,0.1);color:var(--indigo);border-color:rgba(99,102,241,0.3)}
+.cat-tab svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:16px}
+.file-card{padding:18px;border-radius:16px;border:1px solid var(--border);background:var(--surface);transition:all 0.2s;cursor:pointer}
+.file-card:hover{border-color:rgba(255,255,255,0.1);transform:translateY(-2px)}
+.file-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.file-icon svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2}
+.file-name{font-size:13px;font-weight:600;margin:12px 0 2px}
+.file-subject{font-size:11px;color:var(--text3)}
+.file-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+.file-uploader{display:flex;align-items:center;gap:6px}
+.file-uploader span{font-size:10px;color:var(--text3)}
+.file-actions{display:flex;gap:2px}
+
+/* ====== ADMIN ====== */
+.admin-tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px;padding-bottom:1px}
+.admin-tab{padding:10px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.admin-tab:hover{color:var(--text2)}
+.admin-tab.active{color:var(--indigo);border-bottom-color:var(--indigo)}
+.admin-tab svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+@media(max-width:900px){.admin-stats{grid-template-columns:repeat(2,1fr)}}
+.admin-chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.admin-chart-grid{grid-template-columns:1fr}}
+.user-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;transition:background 0.1s}
+.user-row:hover{background:rgba(255,255,255,0.02)}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px}
+.user-email{font-size:11px;color:var(--text3)}
+
+/* Responsive helpers */
+@media(max-width:600px){
+  .greeting h2{font-size:20px}
+  .stat-value{font-size:22px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .files-grid{grid-template-columns:1fr}
+  .admin-stats{grid-template-columns:1fr 1fr}
+}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp 0.4s ease both}
+.fade-up-1{animation-delay:0.05s}
+.fade-up-2{animation-delay:0.1s}
+.fade-up-3{animation-delay:0.15s}
+.fade-up-4{animation-delay:0.2s}
+.fade-up-5{animation-delay:0.25s}
+.fade-up-6{animation-delay:0.3s}
+</style>
+</head>
+<body>
+
+<!-- ============== NAVIGATION TABS ============== -->
+<div class="tabs" id="mainTabs">
+  <div class="tab active" data-screen="login">
+    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Login
+  </div>
+  <div class="tab" data-screen="dashboard">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+    Dashboard
+  </div>
+  <div class="tab" data-screen="feed">
+    <svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>
+    Feed
+  </div>
+  <div class="tab" data-screen="chat">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Chat
+  </div>
+  <div class="tab" data-screen="files">
+    <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+    Files
+  </div>
+  <div class="tab" data-screen="admin">
+    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Admin
+  </div>
+</div>
+
+<!-- ============== LOGIN SCREEN ============== -->
+<div class="screen login-screen active" id="screen-login">
+  <div class="login-left">
+    <div style="position:relative;z-index:2">
+      <div class="logo-row">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <div class="logo-text">
+          <h1>CampusHub</h1>
+          <p>✨ Your College, Connected</p>
+        </div>
+      </div>
+      <div class="login-hero">
+        <h2>The all-in-one<br><span>college platform</span></h2>
+        <p>Connect, collaborate, and excel. Everything you need for your college journey in one beautiful platform.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card fade-up fade-up-1">
+          <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <h4>Real-time Chat</h4>
+          <p>WhatsApp-style messaging</p>
+        </div>
+        <div class="feature-card fade-up fade-up-2">
+          <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h4>Community Feed</h4>
+          <p>Share & connect with peers</p>
+        </div>
+        <div class="feature-card fade-up fade-up-3">
+          <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+          <h4>Question Bank</h4>
+          <p>Past papers & resources</p>
+        </div>
+        <div class="feature-card fade-up fade-up-4">
+          <div class="feature-icon"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <h4>Smart Dashboard</h4>
+          <p>Track everything in one place</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="fade-up" style="max-width:400px;margin:0 auto;width:100%">
+      <div class="logo-row" style="display:none">
+        <div class="logo-icon" style="width:38px;height:38px"><svg viewBox="0 0 24 24" style="width:20px;height:20px"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+        <span style="font-size:18px;font-weight:700">CampusHub</span>
+      </div>
+      <h2 class="form-title">Welcome back</h2>
+      <p class="form-subtitle">Sign in to continue to your campus</p>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="form-input-wrap">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input class="form-input" type="email" placeholder="you@university.edu"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="form-input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input class="form-input" type="password" placeholder="Enter your password"/>
+        </div>
+      </div>
+      <div class="form-remember">
+        <label><input type="checkbox"/> Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <button class="btn-primary" onclick="switchScreen('dashboard')">
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        Sign In
+      </button>
+      <div class="divider"><span>Or continue with</span></div>
+      <div class="social-btns">
+        <button class="btn-social">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/></svg>
+          Google
+        </button>
+        <button class="btn-social">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#fff" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </button>
+      </div>
+      <p class="form-footer">Don't have an account? <a href="#">Create account</a></p>
+      <div class="demo-hint">🎓 Demo mode — click "Sign In" to explore the full app</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== DASHBOARD SCREEN ============== -->
+<div class="screen" id="screen-dashboard">
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div><span>CampusHub</span><small>✨ College Community</small></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" onclick="switchScreen('dashboard')"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>Dashboard</a>
+      <a class="nav-item" onclick="switchScreen('feed')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg></div>Community</a>
+      <a class="nav-item" onclick="switchScreen('chat')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Messages<span class="nav-badge">3</span></a>
+      <a class="nav-item" onclick="switchScreen('files')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>Files</a>
+      <a class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>Question Bank</a>
+      <a class="nav-item" onclick="switchScreen('admin')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>Admin</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="avatar md av-indigo" style="position:relative">AJ<div class="online-dot"></div></div>
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">Alex Johnson</div><div style="font-size:11px;color:var(--text3)">Computer Science</div></div>
+    </div>
+  </aside>
+  <div class="main-area">
+    <div class="topbar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Search anything..."/>
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-badge">3</div></button>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Greeting -->
+      <div class="greeting fade-up">
+        <h2>Good afternoon, Alex 👋</h2>
+        <p>Here's what's happening in your campus today</p>
+        <div class="greeting-badges" style="margin-top:8px">
+          <span class="badge badge-purple badge-dot">🔥 12 day streak</span>
+          <span class="badge badge-emerald badge-dot">🎯 Semester 5</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid fade-up fade-up-1">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div><div class="stat-label">Active Homework</div><div class="stat-value">2</div><div class="stat-change" style="color:var(--indigo)">+2 this week</div></div>
+            <div class="stat-icon" style="background:linear-gradient(135deg,var(--indigo),#3b82f6)"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div><div class="stat-label">Upcoming Exams</div><div class="stat-value">3</div><div class="stat-change" style="color:var(--emerald)">Next in 3 days</div></div>
+            <div class="stat-icon" style="background:linear-gradient(135deg,var(--emerald),#14b8a6)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div><div class="stat-label">Community Posts</div><div class="stat-value">5</div><div class="stat-change" style="color:var(--purple)">+5 today</div></div>
+            <div class="stat-icon" style="background:linear-gradient(135deg,var(--purple),var(--pink))"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div><div class="stat-label">Unread Alerts</div><div class="stat-value">3</div><div class="stat-change" style="color:var(--amber)">Stay updated</div></div>
+            <div class="stat-icon" style="background:linear-gradient(135deg,var(--amber),#f97316)"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="dash-grid fade-up fade-up-2">
+        <div>
+          <!-- Countdown -->
+          <div class="card card-glow" style="margin-bottom:16px">
+            <div class="countdown-card">
+              <div class="countdown-left">
+                <div class="countdown-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="countdown-info">
+                  <small>Next Exam Countdown</small>
+                  <h4>ML Quiz 3</h4>
+                  <div style="display:flex;gap:6px;margin-top:4px"><span class="badge badge-red">QUIZ</span><span style="font-size:11px;color:var(--text3)">May 28, 2026 · Room 205</span></div>
+                </div>
+              </div>
+              <div class="countdown-timer" id="countdown">
+                <div class="countdown-unit"><span id="cd-d">02</span><small>d</small></div>
+                <div class="countdown-unit"><span id="cd-h">14</span><small>h</small></div>
+                <div class="countdown-unit"><span id="cd-m">33</span><small>m</small></div>
+                <div class="countdown-unit"><span id="cd-s">07</span><small>s</small></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title" style="justify-content:space-between">
+              <span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" style="color:var(--indigo)"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Weekly Activity</span>
+              <div style="display:flex;gap:12px;font-size:11px;color:var(--text3)">
+                <span style="display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--indigo)"></span>Posts</span>
+                <span style="display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--purple)"></span>Messages</span>
+                <span style="display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--emerald)"></span>Files</span>
+              </div>
+            </div>
+            <div class="chart-area">
+              <div class="chart-bar" style="height:40%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.2))"></div>
+              <div class="chart-bar" style="height:55%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.2))"></div>
+              <div class="chart-bar" style="height:35%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.2))"></div>
+              <div class="chart-bar" style="height:70%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.2))"></div>
+              <div class="chart-bar" style="height:50%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.2))"></div>
+              <div class="chart-bar" style="height:25%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.2))"></div>
+              <div class="chart-bar" style="height:18%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.2))"></div>
+            </div>
+            <div style="display:flex;justify-content:space-around;padding:8px 8px 0;font-size:11px;color:var(--text3)"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+          </div>
+
+          <!-- Homework -->
+          <div class="card">
+            <div class="card-title" style="justify-content:space-between">
+              <span style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" style="color:var(--amber)"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Homework &amp; Assignments</span>
+              <span style="font-size:11px;color:var(--indigo);cursor:pointer">View all →</span>
+            </div>
+            <div class="hw-item">
+              <div style="flex:1"><div class="hw-title">AVL Tree Implementation <span class="badge badge-amber" style="margin-left:6px">Urgent</span></div><div class="hw-desc">Implement AVL tree with insert, delete, and search operations...</div><div class="hw-meta"><span><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>DSA</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>2 days left</span></div></div>
+              <div class="hw-status" style="background:rgba(99,102,241,0.08)"><svg viewBox="0 0 24 24" style="color:var(--indigo)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            </div>
+            <div class="hw-item">
+              <div style="flex:1"><div class="hw-title">ML Lab Report</div><div class="hw-desc">Write a detailed lab report on linear regression experiment...</div><div class="hw-meta"><span><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Machine Learning</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>5 days left</span></div></div>
+              <div class="hw-status" style="background:rgba(99,102,241,0.08)"><svg viewBox="0 0 24 24" style="color:var(--indigo)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            </div>
+            <div class="hw-item overdue">
+              <div style="flex:1"><div class="hw-title">DB Normalization <span class="badge badge-red" style="margin-left:6px">Overdue</span></div><div class="hw-desc">Normalize the given database schema to 3NF...</div><div class="hw-meta"><span><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>DBMS</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Due 1 day ago</span></div></div>
+              <div class="hw-status" style="background:rgba(239,68,68,0.08)"><svg viewBox="0 0 24 24" style="color:var(--red)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div>
+          <!-- Quick actions -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title"><svg viewBox="0 0 24 24" style="color:var(--amber)"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Quick Actions</div>
+            <div class="quick-grid">
+              <a class="quick-btn" onclick="switchScreen('chat')"><div class="quick-icon" style="background:linear-gradient(135deg,var(--indigo),#3b82f6)"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><span>New Chat</span></a>
+              <a class="quick-btn" onclick="switchScreen('files')"><div class="quick-icon" style="background:linear-gradient(135deg,var(--emerald),#14b8a6)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span>Upload File</span></a>
+              <a class="quick-btn"><div class="quick-icon" style="background:linear-gradient(135deg,var(--purple),var(--pink))"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><span>Questions</span></a>
+              <a class="quick-btn" onclick="switchScreen('feed')"><div class="quick-icon" style="background:linear-gradient(135deg,var(--amber),#f97316)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Community</span></a>
+            </div>
+          </div>
+
+          <!-- Announcements -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title"><svg viewBox="0 0 24 24" style="color:#60a5fa"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Announcements</div>
+            <div class="ann-item"><div class="ann-inner"><div class="ann-dot" style="background:var(--amber)"></div><div style="flex:1"><div class="ann-title">Campus Wi-Fi Upgrade</div><div class="ann-text">Network maintenance this Saturday 6 AM-12 PM. New Wi-Fi 6E support.</div><div class="ann-footer">Prof. Williams · 4 hours ago</div></div></div></div>
+            <div class="ann-item"><div class="ann-inner"><div class="ann-dot" style="background:#60a5fa"></div><div style="flex:1"><div class="ann-title">Hackathon 2026 Registration</div><div class="ann-text">Register now! Theme: "AI for Social Good". Prize pool: $5,000.</div><div class="ann-footer">Emily Park · 12 hours ago</div></div></div></div>
+            <div class="ann-item"><div class="ann-inner"><div class="ann-dot" style="background:var(--text3)"></div><div style="flex:1"><div class="ann-title">Library Hours Extended</div><div class="ann-text">24/7 during finals week. Free coffee after 8 PM.</div><div class="ann-footer">Prof. Williams · 1 day ago</div></div></div></div>
+          </div>
+
+          <!-- Exam schedule -->
+          <div class="card">
+            <div class="card-title"><svg viewBox="0 0 24 24" style="color:var(--red)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Exam Schedule</div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.015);margin-bottom:8px">
+              <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(239,68,68,0.08),rgba(249,115,22,0.08));border:1px solid rgba(239,68,68,0.1);display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:12px;font-weight:700;color:var(--red)">28</span><span style="font-size:9px;color:rgba(239,68,68,0.7)">May</span></div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">ML Quiz 3</div><div style="display:flex;gap:6px;margin-top:3px"><span class="badge badge-blue">quiz</span><span style="font-size:10px;color:var(--text3)">60 min</span></div></div>
+              <span style="font-size:12px;color:var(--text2)">3d</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.015);margin-bottom:8px">
+              <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(239,68,68,0.08),rgba(249,115,22,0.08));border:1px solid rgba(239,68,68,0.1);display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:12px;font-weight:700;color:var(--red)">01</span><span style="font-size:9px;color:rgba(239,68,68,0.7)">Jun</span></div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">DSA Midterm</div><div style="display:flex;gap:6px;margin-top:3px"><span class="badge badge-amber">midterm</span><span style="font-size:10px;color:var(--text3)">180 min</span></div></div>
+              <span style="font-size:12px;color:var(--text2)">7d</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.015)">
+              <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(239,68,68,0.08),rgba(249,115,22,0.08));border:1px solid rgba(239,68,68,0.1);display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:12px;font-weight:700;color:var(--red)">15</span><span style="font-size:9px;color:rgba(239,68,68,0.7)">Jun</span></div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">DBMS Final Exam</div><div style="display:flex;gap:6px;margin-top:3px"><span class="badge badge-red">final</span><span style="font-size:10px;color:var(--text3)">180 min</span></div></div>
+              <span style="font-size:12px;color:var(--text2)">21d</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============== FEED SCREEN ============== -->
+<div class="screen" id="screen-feed">
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div><div><span>CampusHub</span><small>✨ College Community</small></div></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="switchScreen('dashboard')"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>Dashboard</a>
+      <a class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg></div>Community</a>
+      <a class="nav-item" onclick="switchScreen('chat')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Messages<span class="nav-badge">3</span></a>
+      <a class="nav-item" onclick="switchScreen('files')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>Files</a>
+      <a class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>Question Bank</a>
+      <a class="nav-item" onclick="switchScreen('admin')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>Admin</a>
+    </nav>
+    <div class="sidebar-user"><div class="avatar md av-indigo" style="position:relative">AJ<div class="online-dot"></div></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Alex Johnson</div><div style="font-size:11px;color:var(--text3)">Computer Science</div></div></div>
+  </aside>
+  <div class="main-area">
+    <div class="topbar"><div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search anything..."/><kbd>⌘K</kbd></div><div class="topbar-right"><button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-badge">3</div></button></div></div>
+    <div class="content" style="max-width:740px;margin:0 auto">
+      <div class="fade-up" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><div><h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px">✨ Community Feed</h2><p style="font-size:13px;color:var(--text3);margin-top:2px">Stay connected with your campus</p></div><button class="btn-primary" style="width:auto;padding:8px 16px;font-size:13px">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>New Post</button></div>
+
+      <!-- Trending -->
+      <div class="card fade-up fade-up-1" style="padding:10px;margin-bottom:16px;display:flex;align-items:center;gap:8px;overflow-x:auto">
+        <span style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;background:rgba(245,158,11,0.08);color:var(--amber);font-size:11px;font-weight:600;white-space:nowrap">🔥 Trending</span>
+        <span class="cat-tab active" style="padding:6px 12px;font-size:11px">#Hackathon2026</span>
+        <span class="cat-tab" style="padding:6px 12px;font-size:11px">#DSA</span>
+        <span class="cat-tab" style="padding:6px 12px;font-size:11px">#Finals</span>
+        <span class="cat-tab" style="padding:6px 12px;font-size:11px">#TechFest</span>
+        <span class="cat-tab" style="padding:6px 12px;font-size:11px">#Placement</span>
+      </div>
+
+      <!-- Posts -->
+      <div class="post-card fade-up fade-up-2">
+        <div class="post-header"><div class="post-author"><div class="avatar md av-emerald">SC</div><div><div class="post-author-name">Sarah Chen</div><div class="post-author-time">30 minutes ago</div></div></div><button class="icon-btn" style="width:28px;height:28px"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div>
+        <div class="post-content">Just finished the Data Structures assignment! The AVL tree implementation was tricky but finally got all test cases passing. Anyone else struggling with the rotation logic? Happy to help! 🎉🌲</div>
+        <div class="post-tags"><span class="post-tag">#DSA</span><span class="post-tag">#Assignment</span><span class="post-tag">#Help</span></div>
+        <div class="post-stats"><span>3 likes</span><span>5 comments</span></div>
+        <div class="post-actions">
+          <button class="post-action liked"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Like</button>
+          <button class="post-action"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Comment</button>
+          <button class="post-action"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>
+        </div>
+      </div>
+
+      <div class="post-card fade-up fade-up-3">
+        <div class="post-header"><div class="post-author"><div class="avatar md av-pink">EP</div><div><div class="post-author-name" style="display:flex;align-items:center;gap:6px">Emily Park <span class="badge badge-purple">Moderator</span></div><div class="post-author-time">2 hours ago</div></div></div><button class="icon-btn" style="width:28px;height:28px"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div>
+        <div class="post-content">📢 Important: The hackathon registration deadline has been extended to next Friday! We already have 20+ teams signed up. This year's theme is "AI for Social Good". Don't miss out!
+
+Prize pool: $5,000 💰
+Free food and swag! 🍕👕</div>
+        <div class="post-tags"><span class="post-tag">#Hackathon</span><span class="post-tag">#Event</span><span class="post-tag">#AI</span></div>
+        <div class="post-stats"><span>5 likes</span><span>12 comments</span></div>
+        <div class="post-actions">
+          <button class="post-action"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Like</button>
+          <button class="post-action"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Comment</button>
+          <button class="post-action"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>
+        </div>
+      </div>
+
+      <div class="post-card fade-up fade-up-4">
+        <div class="post-header"><div class="post-author"><div class="avatar md av-cyan">PW</div><div><div class="post-author-name" style="display:flex;align-items:center;gap:6px">Prof. Williams <span class="badge badge-blue">Professor</span></div><div class="post-author-time">5 hours ago</div></div></div><button class="icon-btn" style="width:28px;height:28px"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div>
+        <div class="post-content">Uploaded the lecture slides for Chapter 7: Machine Learning Fundamentals. Please review before Thursday's class. There will be a pop quiz! 📚
+
+Also, office hours this week are shifted to Wednesday 2-4 PM.</div>
+        <div class="post-tags"><span class="post-tag">#ML</span><span class="post-tag">#Lecture</span><span class="post-tag">#Important</span></div>
+        <div class="post-stats"><span>2 likes</span><span>3 comments</span></div>
+        <div class="post-actions">
+          <button class="post-action"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Like</button>
+          <button class="post-action"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Comment</button>
+          <button class="post-action"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============== CHAT SCREEN ============== -->
+<div class="screen" id="screen-chat">
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div><div><span>CampusHub</span><small>✨ College Community</small></div></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="switchScreen('dashboard')"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>Dashboard</a>
+      <a class="nav-item" onclick="switchScreen('feed')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg></div>Community</a>
+      <a class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Messages<span class="nav-badge">3</span></a>
+      <a class="nav-item" onclick="switchScreen('files')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>Files</a>
+      <a class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>Question Bank</a>
+      <a class="nav-item" onclick="switchScreen('admin')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>Admin</a>
+    </nav>
+    <div class="sidebar-user"><div class="avatar md av-indigo" style="position:relative">AJ<div class="online-dot"></div></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Alex Johnson</div><div style="font-size:11px;color:var(--text3)">Computer Science</div></div></div>
+  </aside>
+  <div class="main-area">
+    <div class="topbar"><div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search anything..."/><kbd>⌘K</kbd></div><div class="topbar-right"><button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-badge">3</div></button></div></div>
+    <div class="content" style="padding:0;height:calc(100vh - 94px)">
+      <div class="chat-layout fade-up" style="height:100%">
+        <!-- Chat sidebar -->
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-header">
+            <div class="chat-sidebar-title"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</div>
+            <div style="position:relative"><svg viewBox="0 0 24 24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--text3);fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="chat-search" placeholder="Search conversations..." style="padding-left:32px"/></div>
+          </div>
+          <div class="chat-list">
+            <div class="chat-item active">
+              <div style="position:relative"><div class="avatar lg av-emerald">SC<div class="online-dot"></div></div></div>
+              <div style="flex:1;min-width:0"><div class="chat-name">Sarah Chen</div><div class="chat-preview"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/><polyline points="20 6 9 17 4 12" transform="translate(3,0)"/></svg>Sure, I'll send you the notes!</div></div>
+              <span class="chat-time">5m</span>
+            </div>
+            <div class="chat-item">
+              <div style="position:relative"><div class="avatar lg av-indigo">CS<div class="group-badge"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div></div>
+              <div style="flex:1;min-width:0"><div class="chat-name">CS Batch 2026 🎓</div><div class="chat-preview">Meeting at 5 PM in the lab!</div></div>
+              <span class="chat-time">15m</span>
+            </div>
+            <div class="chat-item">
+              <div style="position:relative"><div class="avatar lg av-orange">HA<div class="group-badge"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div></div></div>
+              <div style="flex:1;min-width:0"><div class="chat-name">Hackathon Team Alpha 🚀</div><div class="chat-preview"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/><polyline points="20 6 9 17 4 12" transform="translate(3,0)"/></svg>I pushed the frontend changes</div></div>
+              <span class="chat-time">45m</span>
+            </div>
+            <div class="chat-item">
+              <div style="position:relative"><div class="avatar lg av-cyan">PW<div class="offline-dot"></div></div></div>
+              <div style="flex:1;min-width:0"><div class="chat-name">Prof. Williams</div><div class="chat-preview">Your project proposal looks good...</div></div>
+              <span class="chat-time">2h</span>
+            </div>
+          </div>
+        </div>
+        <!-- Chat main -->
+        <div class="chat-main">
+          <div class="chat-topbar">
+            <div class="chat-topbar-info"><div class="avatar md av-emerald" style="position:relative">SC<div class="online-dot"></div></div><div><div class="chat-topbar-name">Sarah Chen</div><div class="chat-topbar-status">Online</div></div></div>
+            <div class="chat-topbar-actions"><button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button><button class="icon-btn"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></button><button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div>
+          </div>
+          <div class="messages-area">
+            <div class="msg-date"><span>Today</span></div>
+            <div class="msg-row mine last"><div class="msg-bubble sent">Hey Sarah! Did you finish the DSA assignment?<div class="msg-time">10:30 AM <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/><polyline points="20 6 9 17 4 12" transform="translate(3,0)"/></svg></div></div></div>
+            <div class="msg-row"><div class="msg-avatar"><div class="avatar sm av-emerald" style="font-size:9px">SC</div></div><div class="msg-bubble received">Yes! Just submitted it. The AVL tree part was intense 😅<div class="msg-time">10:35 AM</div></div></div>
+            <div class="msg-row last"><div class="msg-avatar"></div><div class="msg-bubble received" style="border-bottom-left-radius:4px">The rotation logic took me 3 hours to debug lol<div class="msg-time">10:35 AM</div></div></div>
+            <div class="msg-row mine last"><div class="msg-bubble sent">Could you share your notes for the rotation algorithms?<div class="msg-time">10:40 AM <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/><polyline points="20 6 9 17 4 12" transform="translate(3,0)"/></svg></div></div></div>
+            <div class="msg-row last"><div class="msg-avatar"><div class="avatar sm av-emerald" style="font-size:9px">SC</div></div><div class="msg-bubble received">Sure, I'll send you the notes!<div class="msg-time">10:55 AM</div></div></div>
+          </div>
+          <div class="typing-indicator"><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div><span class="typing-text">Sarah is typing...</span></div>
+          <div class="chat-input-area">
+            <button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></button>
+            <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+            <input class="chat-input" placeholder="Type a message..." style="flex:1"/>
+            <button class="send-btn"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============== FILES SCREEN ============== -->
+<div class="screen" id="screen-files">
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div><div><span>CampusHub</span><small>✨ College Community</small></div></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="switchScreen('dashboard')"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>Dashboard</a>
+      <a class="nav-item" onclick="switchScreen('feed')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg></div>Community</a>
+      <a class="nav-item" onclick="switchScreen('chat')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Messages<span class="nav-badge">3</span></a>
+      <a class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>Files</a>
+      <a class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>Question Bank</a>
+      <a class="nav-item" onclick="switchScreen('admin')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>Admin</a>
+    </nav>
+    <div class="sidebar-user"><div class="avatar md av-indigo" style="position:relative">AJ<div class="online-dot"></div></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Alex Johnson</div><div style="font-size:11px;color:var(--text3)">Computer Science</div></div></div>
+  </aside>
+  <div class="main-area">
+    <div class="topbar"><div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search anything..."/><kbd>⌘K</kbd></div><div class="topbar-right"><button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-badge">3</div></button></div></div>
+    <div class="content">
+      <div class="files-header fade-up">
+        <div><h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:var(--indigo);fill:none;stroke-width:2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>File Manager</h2><p style="font-size:13px;color:var(--text3);margin-top:2px">All files stored securely on Google Drive</p></div>
+        <div style="display:flex;gap:8px;align-items:center"><div class="drive-badge"><svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>Google Drive Connected</div><button class="btn-primary" style="width:auto;padding:8px 16px;font-size:13px"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button></div>
+      </div>
+
+      <div class="cat-tabs fade-up fade-up-1" style="margin-top:16px">
+        <span class="cat-tab active"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>All Files</span>
+        <span class="cat-tab"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Notes</span>
+        <span class="cat-tab"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>Assignments</span>
+        <span class="cat-tab"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Question Papers</span>
+        <span class="cat-tab"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Syllabus</span>
+      </div>
+
+      <div class="files-grid fade-up fade-up-2">
+        <div class="file-card">
+          <div style="display:flex;justify-content:space-between"><div class="file-icon" style="background:linear-gradient(135deg,var(--red),#e11d48)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><button class="icon-btn" style="width:28px;height:28px"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div>
+          <div class="file-name">DSA_Chapter5_Notes.pdf</div>
+          <div class="file-subject">Data Structures & Algorithms</div>
+          <div style="display:flex;gap:6px;margin:8px 0"><span class="badge badge-emerald">notes</span><span style="font-size:10px;color:var(--text3)">2.3 MB</span></div>
+          <div class="file-footer"><div class="file-uploader"><div class="avatar sm av-emerald" style="font-size:8px;width:20px;height:20px">SC</div><span>Sarah Chen · 2d ago</span></div><div class="file-actions"><button class="icon-btn" style="width:26px;height:26px"><svg viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn" style="width:26px;height:26px"><svg viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button></div></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>45 downloads</div>
+        </div>
+        <div class="file-card">
+          <div style="display:flex;justify-content:space-between"><div class="file-icon" style="background:linear-gradient(135deg,var(--red),#e11d48)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><button class="icon-btn" style="width:28px;height:28px"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div>
+          <div class="file-name">ML_Lab_Manual.pdf</div>
+          <div class="file-subject">Machine Learning</div>
+          <div style="display:flex;gap:6px;margin:8px 0"><span class="badge badge-emerald">notes</span><span style="font-size:10px;color:var(--text3)">4.9 MB</span></div>
+          <div class="file-footer"><div class="file-uploader"><div class="avatar sm av-cyan" style="font-size:8px;width:20px;height:20px">PW</div><span>Prof. Williams · 5d ago</span></div><div class="file-actions"><button class="icon-btn" style="width:26px;height:26px"><svg viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn" style="width:26px;height:26px"><svg viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button></div></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>89 downloads</div>
+        </div>
+        <div class="file-card">
+          <div style="display:flex;justify-content:space-between"><div class="file-icon" style="background:linear-gradient(135deg,var(--red),#e11d48)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><button class="icon-btn" style="width:28px;height:28px"><svg viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div>
+          <div class="file-name">DBMS_Assignment2.pdf</div>
+          <div class="file-subject">Database Management</div>
+          <div style="display:flex;gap:6px;margin:8px 0"><span class="badge badge-amber">assignment</span><span style="font-size:10px;color:var(--text3)">1.2 MB</span></div>
+          <div class="file-footer"><div class="file-uploader"><div class="avatar sm av-cyan" style="font-size:8px;width:20px;height:20px">PW</div><span>Prof. Williams · 3d ago</span></div><div class="file-actions"><button class="icon-btn" style="width:26px;height:26px"><svg viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-btn" style="width:26px;height:26px"><svg viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button></div></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>32 downloads</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============== ADMIN SCREEN ============== -->
+<div class="screen" id="screen-admin">
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div><div><span>CampusHub</span><small>✨ College Community</small></div></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="switchScreen('dashboard')"><div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>Dashboard</a>
+      <a class="nav-item" onclick="switchScreen('feed')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg></div>Community</a>
+      <a class="nav-item" onclick="switchScreen('chat')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Messages<span class="nav-badge">3</span></a>
+      <a class="nav-item" onclick="switchScreen('files')"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>Files</a>
+      <a class="nav-item"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>Question Bank</a>
+      <a class="nav-item active"><div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>Admin</a>
+    </nav>
+    <div class="sidebar-user"><div class="avatar md av-indigo" style="position:relative">AJ<div class="online-dot"></div></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Alex Johnson</div><div style="font-size:11px;color:var(--text3)">Computer Science</div></div></div>
+  </aside>
+  <div class="main-area">
+    <div class="topbar"><div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search anything..."/><kbd>⌘K</kbd></div><div class="topbar-right"><button class="icon-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-badge">3</div></button></div></div>
+    <div class="content">
+      <div class="fade-up" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:var(--indigo);fill:none;stroke-width:2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Admin Panel</h2><p style="font-size:13px;color:var(--text3);margin-top:2px">Manage your campus platform</p></div><div style="display:flex;gap:8px"><span class="badge badge-emerald badge-dot">System Healthy</span></div></div>
+
+      <div class="admin-stats fade-up fade-up-1">
+        <div class="stat-card"><div class="stat-header"><div><div class="stat-label">Total Users</div><div class="stat-value">1,247</div><div class="stat-change" style="color:var(--emerald);display:flex;align-items:center;gap:3px"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>+12.5%</div></div><div class="stat-icon" style="background:linear-gradient(135deg,var(--indigo),#3b82f6)"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div></div>
+        <div class="stat-card"><div class="stat-header"><div><div class="stat-label">Total Posts</div><div class="stat-value">3,456</div><div class="stat-change" style="color:var(--emerald);display:flex;align-items:center;gap:3px"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>+8.2%</div></div><div class="stat-icon" style="background:linear-gradient(135deg,var(--emerald),#14b8a6)"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div></div></div>
+        <div class="stat-card"><div class="stat-header"><div><div class="stat-label">Files Uploaded</div><div class="stat-value">892</div><div class="stat-change" style="color:var(--emerald);display:flex;align-items:center;gap:3px"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>+15.3%</div></div><div class="stat-icon" style="background:linear-gradient(135deg,var(--purple),var(--pink))"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div></div>
+        <div class="stat-card"><div class="stat-header"><div><div class="stat-label">Active Chats</div><div class="stat-value">156</div><div class="stat-change" style="color:var(--emerald);display:flex;align-items:center;gap:3px"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>+5.1%</div></div><div class="stat-icon" style="background:linear-gradient(135deg,var(--amber),#f97316)"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div></div>
+      </div>
+
+      <div class="admin-chart-grid fade-up fade-up-2">
+        <div class="card"><div class="card-title"><svg viewBox="0 0 24 24" style="color:var(--indigo)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Growth Analytics</div><div class="chart-area" style="height:180px"><div class="chart-bar" style="height:15%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.15))"></div><div class="chart-bar" style="height:22%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.15))"></div><div class="chart-bar" style="height:32%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.15))"></div><div class="chart-bar" style="height:45%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.15))"></div><div class="chart-bar" style="height:65%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.15))"></div><div class="chart-bar" style="height:95%;background:linear-gradient(180deg,var(--indigo),rgba(99,102,241,0.15))"></div></div><div style="display:flex;justify-content:space-around;padding:8px 8px 0;font-size:10px;color:var(--text3)"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span></div></div>
+        <div class="card"><div class="card-title"><svg viewBox="0 0 24 24" style="color:var(--emerald)"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Content Distribution</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <div class="user-row"><div class="avatar md av-indigo">SC</div><div class="user-info"><div class="user-name">Sarah Chen <span class="badge badge-default">student</span></div><div class="user-email">sarah@university.edu · Computer Science</div></div><span class="badge badge-emerald badge-dot">Online</span></div>
+            <div class="user-row"><div class="avatar md av-orange">MR</div><div class="user-info"><div class="user-name">Mike Rivera <span class="badge badge-default">student</span></div><div class="user-email">mike@university.edu · Electronics</div></div><span class="badge badge-default badge-dot">Offline</span></div>
+            <div class="user-row"><div class="avatar md av-pink">EP</div><div class="user-info"><div class="user-name">Emily Park <span class="badge badge-purple">moderator</span></div><div class="user-email">emily@university.edu · Computer Science</div></div><span class="badge badge-emerald badge-dot">Online</span></div>
+            <div class="user-row"><div class="avatar md av-cyan">PW</div><div class="user-info"><div class="user-name">Prof. Williams <span class="badge badge-red">admin</span></div><div class="user-email">williams@university.edu · Computer Science</div></div><span class="badge badge-default badge-dot">Offline</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// Screen switching
+function switchScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const screen = document.getElementById('screen-' + screenId);
+  if (screen) {
+    screen.classList.add('active');
+    // Re-trigger animations
+    screen.querySelectorAll('.fade-up').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+  const tab = document.querySelector(`[data-screen="${screenId}"]`);
+  if (tab) tab.classList.add('active');
+}
+
+// Tab click handlers
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => switchScreen(tab.dataset.screen));
+});
+
+// Live countdown timer
+function updateCountdown() {
+  const target = new Date();
+  target.setDate(target.getDate() + 2);
+  target.setHours(target.getHours() + 14);
+  const now = new Date();
+  let diff = target - now;
+  if (diff < 0) diff = 0;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  const el = (id) => document.getElementById(id);
+  if (el('cd-d')) el('cd-d').textContent = String(d).padStart(2, '0');
+  if (el('cd-h')) el('cd-h').textContent = String(h).padStart(2, '0');
+  if (el('cd-m')) el('cd-m').textContent = String(m).padStart(2, '0');
+  if (el('cd-s')) el('cd-s').textContent = String(s).padStart(2, '0');
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// Mobile responsive logo
+if (window.innerWidth < 900) {
+  document.querySelectorAll('.login-right .logo-row').forEach(el => el.style.display = 'flex');
+}
+</script>
+</body>
+</html>
