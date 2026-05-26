@@ -3,14 +3,13 @@ import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
+  apiKey: "AIzaSyAZfHqdufO1V2IpErBY7S4Ls3uq1CoVyQo",
+  authDomain: "dgstd-3.firebaseapp.com",
+  projectId: "dgstd-3",
+  storageBucket: "dgstd-3.firebasestorage.app",
+  messagingSenderId: "610791863684",
+  appId: "1:610791863684:web:c5e53fcbaba9cd6eda19d1"
 };
-
 // Only initialize if we have a real API key (skip during SSR build)
 let app: FirebaseApp;
 let auth: Auth;
