@@ -18,7 +18,7 @@ const col = (name: string) => collection(db, name);
    ADMIN EMAIL — set this to YOUR email. Only this user gets admin.
    Issue #4 fix: hardcoded admin credential
    ================================================================ */
-export const ADMIN_EMAIL = 'admin@campushub.com';
+export const ADMIN_EMAIL = 'rahik.islam2000@gmail.com';
 
 // ─── USERS ──────────────────────────────────────────────
 export async function createUserProfile(uid: string, data: {
